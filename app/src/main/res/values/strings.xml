@@ -4,5 +4,7 @@
     <string name="app_name">CamSwitch</string>
     <string name="app_title">Remote Cam Switch</string>
     <string name="action_settings">Settings</string>
+    <string name="exit_button">Exit</string>
+    <string name="img_counter">0</string>
 
 </resources>

@@ -7,6 +7,9 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -15,10 +18,28 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        IViewRequest viewRequest = new IViewRequest() {
+
+            public View requestViewByID(int id) {
+                return findViewById(id);
+            }
+
+            public Context getApplicationContext() {
+                return this.getApplicationContext();
+            }
+        };
+
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getCanonicalName()));
-    }
 
+        final Button button = (Button) findViewById(R.id.exit_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

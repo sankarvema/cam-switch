@@ -1,18 +1,22 @@
 package sanstech.camswitch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
-import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-public class PhotoHandler implements Camera.PictureCallback {
+public class PhotoHandler{
 
+    public static int Counter=0;
     private final Context context;
     private Camera camera = null;
 
@@ -31,14 +35,15 @@ public class PhotoHandler implements Camera.PictureCallback {
 
         try{
             camera.startPreview();
-            Camera.Parameters params = mCamera.getParameters();
-            params.setRotation(getCameraOrientation());
+            Camera.Parameters params = camera.getParameters();
+            //params.setRotation(params.getCameraOrientation());
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+            params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
-            setPictureSize(int width, int height);
-            mCamera.setParameters(params);
+            params.setPictureSize(3600, 2160);
+            camera.setParameters(params);
             camera.takePicture(shutterCallback, rawCallback,jpegCallback);
+            Thread.sleep(700);
         }catch (Exception ex){
             Toast.makeText(context, "Error taking snap!!!",
                     Toast.LENGTH_LONG).show();
@@ -47,7 +52,9 @@ public class PhotoHandler implements Camera.PictureCallback {
 
     Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
         public void onShutter() {
-            Log.d("bt", "onShutter'd");
+            Log.d("CamSwitch", "onShutter'd");
+            Toast.makeText(context, "Shutter callback",
+                    Toast.LENGTH_LONG).show();
         }
     };
 
@@ -76,18 +83,21 @@ public class PhotoHandler implements Camera.PictureCallback {
     /** Handles data for raw picture */
     Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            Log.d("bt", "onPictureTaken - raw");
+            Log.d("CamSwitch", "onPictureTaken - raw");
+            Toast.makeText(context, "Raw call back",
+                    Toast.LENGTH_LONG).show();
         }
     };
 
     Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-
+            Toast.makeText(context, "Jpeg callback", Toast.LENGTH_LONG).show();
+            PhotoHandler.Counter ++;
             File pictureFileDir = getDir();
 
             if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
 
-                Log.d("MakePhotoActivity.DEBUG_TAG", "Can't create directory to save image.");
+                Log.d("CamSwitch", "Can't create directory to save image.");
                 Toast.makeText(context, "Can't create directory to save image.",
                         Toast.LENGTH_LONG).show();
                 return;
@@ -103,70 +113,84 @@ public class PhotoHandler implements Camera.PictureCallback {
             File pictureFile = new File(filename);
 
             try {
+                Toast.makeText(context, "Save file to " + photoFile, Toast.LENGTH_LONG).show();
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
-                Toast.makeText(context, "New Image saved:" + photoFile,
+                Toast.makeText(context, "File saved to: " + photoFile,
                         Toast.LENGTH_LONG).show();
-                Log.d("dt", "onPictureTaken - wrote bytes: " + data.length);
+                Log.d("CamSwitch", "onPictureTaken - wrote bytes: " + data.length);
+
+                //View rootView = ((Activity) context).getWindow().getDecorView().findViewById(android.R.id.content);
+//                View rootView = View.inflate(context, R.layout.activity_main, null);
+//
+//                TextView counter = (TextView) rootView.findViewById(R.id.counter_display);
+//
+//                counter.setText(Integer.toString(PhotoHandler.Counter));
+
             } catch (Exception error) {
-                Log.d("MakePhotoActivity.DEBUG_TAG", "File" + filename + "not saved: "
+                Log.d("CamSwitch", "File" + filename + "not saved: "
                         + error.getMessage());
-                Toast.makeText(context, "Image could not be saved.",
+                Toast.makeText(context, "Error saving file",
                         Toast.LENGTH_LONG).show();
             }
+            finally
+            {
+                // release camera after completing the act
+                if (camera != null) {
+                    camera.release();
+                    camera = null;
+                }
+            }
 
-//                outStream = new FileOutputStream(String.format(
-//                        "/storage/sdcard0/collect/%d", photoFile));
-//                outStream.write(data);
-//                outStream.close();
-
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//            }
-            Log.d("bt", "onPictureTaken - jpeg");
+            Log.d("CamSwitch", "onPictureTaken - jpeg");
         }
     };
 
 
-    @Override
-    public void onPictureTaken(byte[] data, Camera camera) {
-
-        File pictureFileDir = getDir();
-
-        if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
-
-            Log.d("MakePhotoActivity.DEBUG_TAG", "Can't create directory to save image.");
-            Toast.makeText(context, "Can't create directory to save image.",
-                    Toast.LENGTH_LONG).show();
-            return;
-
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
-        String date = dateFormat.format(new Date());
-        String photoFile = "Picture_" + date + ".jpg";
-
-        String filename = pictureFileDir.getPath() + File.separator + photoFile;
-
-        File pictureFile = new File(filename);
-
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            fos.write(data);
-            fos.close();
-            Toast.makeText(context, "New Image saved:" + photoFile,
-                    Toast.LENGTH_LONG).show();
-        } catch (Exception error) {
-            Log.d("MakePhotoActivity.DEBUG_TAG", "File" + filename + "not saved: "
-                    + error.getMessage());
-            Toast.makeText(context, "Image could not be saved.",
-                    Toast.LENGTH_LONG).show();
-        }
-    }
+//    @Override
+//    public void onPictureTaken(byte[] data, Camera camera) {
+//
+//        File pictureFileDir = getDir();
+//
+//        if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
+//
+//            Log.d("CamSwitch", "Can't create directory to save image.");
+//            Toast.makeText(context, "Can't create directory to save image.",
+//                    Toast.LENGTH_LONG).show();
+//            return;
+//
+//        }
+//
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+//        String date = dateFormat.format(new Date());
+//        String photoFile = "Picture_" + date + ".jpg";
+//
+//        String filename = pictureFileDir.getPath() + File.separator + photoFile;
+//
+//        File pictureFile = new File(filename);
+//
+//        try {
+//            FileOutputStream fos = new FileOutputStream(pictureFile);
+//            fos.write(data);
+//            fos.close();
+//            Toast.makeText(context, "New Image saved:" + photoFile,
+//                    Toast.LENGTH_LONG).show();
+//        } catch (Exception error) {
+//            Log.d("CamSwitch", "File" + filename + "not saved: "
+//                    + error.getMessage());
+//            Toast.makeText(context, "Image could not be saved.",
+//                    Toast.LENGTH_LONG).show();
+//        }
+//        finally
+//        {
+//            // release camera after completing the act
+//            if (camera != null) {
+//                camera.release();
+//                camera = null;
+//            }
+//        }
+//    }
 
     private File getDir() {
         return new File("/storage/sdcard0/", "BT-Area");

@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
+    PhotoHandler photo = null;
+
     public MediaButtonIntentReceiver() {
         super();
     }
@@ -15,7 +17,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Toast.makeText(context, "OnReceive", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "OnReceive", Toast.LENGTH_SHORT).show();
         String intentAction = intent.getAction();
         if (!Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
             return;
@@ -30,7 +32,10 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         if (action == KeyEvent.ACTION_DOWN) {
             // do something
             Toast.makeText(context, "BUTTON PRESSED!", Toast.LENGTH_SHORT).show();
-            PhotoHandler photo = new PhotoHandler(context);
+
+            if (photo==null)
+                photo = new PhotoHandler(context);
+
             photo.takePhoto();
         }
         abortBroadcast();

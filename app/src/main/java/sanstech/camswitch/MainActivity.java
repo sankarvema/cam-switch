@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
+public static MainActivity Instance = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +29,8 @@ public class MainActivity extends Activity {
                 return this.getApplicationContext();
             }
         };
+
+        MainActivity.Instance = this;
 
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getCanonicalName()));

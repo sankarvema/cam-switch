@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Surface;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ public class PhotoHandler{
     public static int Counter=0;
     private final Context context;
     private Camera camera = null;
+    private int cameraId = -1;
 
     public PhotoHandler(Context context) {
         this.context = context;
@@ -40,8 +42,34 @@ public class PhotoHandler{
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
-            params.setPictureSize(3600, 2160);
-            camera.setParameters(params);
+            params.setPictureSize(2160,4800);
+            //params.set("orientation", "landscape");
+            params.setRotation(90);
+
+//            camera.setParameters(params);
+//            int rotation = MainActivity.Instance.getWindowManager().getDefaultDisplay()
+//                    .getRotation();
+//
+//            int degrees = 0;
+//            switch (rotation) {
+//                case Surface.ROTATION_0: degrees = 270; break;
+//                case Surface.ROTATION_90: degrees = 270; break;
+//                case Surface.ROTATION_180: degrees = 270; break;
+//                case Surface.ROTATION_270: degrees = 270; break;
+//            }
+//
+//            int result;
+//            Camera.CameraInfo info = new Camera.CameraInfo();
+//            Camera.getCameraInfo(cameraId,info);
+//            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//                result = (info.orientation + degrees) % 360;
+//                result = (360 - result) % 360;  // compensate the mirror
+//            } else {  // back-facing
+//                result = (info.orientation - degrees + 360) % 360;
+//            }
+
+
+            //camera.setDisplayOrientation(90);
             camera.takePicture(shutterCallback, rawCallback,jpegCallback);
             Thread.sleep(700);
         }catch (Exception ex){
@@ -63,7 +91,6 @@ public class PhotoHandler{
     }
 
     private Camera getCamera() {
-        int cameraId = -1;
         // Search for the front facing camera
         int numberOfCameras = Camera.getNumberOfCameras();
         for (int i = 0; i < numberOfCameras; i++) {

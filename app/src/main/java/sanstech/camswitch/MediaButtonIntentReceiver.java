@@ -29,6 +29,26 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         }
 
         int action = event.getAction();
+//        switch (event.getKeyCode()) {
+//            case KeyEvent.KEYCODE_HEADSETHOOK:
+//                if (action == KeyEvent.ACTION_DOWN) {
+//                    long time = SystemClock.uptimeMillis();
+//                    // double click
+//                    if (time - sLastClickTime < DOUBLE_CLICK_DELAY)
+//                        // do something
+//                        Toast.makeText(context, "BUTTON PRESSED DOUBLE!",
+//                                Toast.LENGTH_SHORT).show();
+//                        // single click
+//                    else {
+//                        // do something
+//                        Toast.makeText(context, "BUTTON PRESSED!",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                    sLastClickTime = time;
+//                }
+//                break;
+//        }
+
         if (action == KeyEvent.ACTION_DOWN) {
             // do something
             Toast.makeText(context, "BUTTON PRESSED!", Toast.LENGTH_SHORT).show();

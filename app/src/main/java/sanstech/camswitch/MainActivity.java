@@ -1,6 +1,7 @@
 package sanstech.camswitch;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
@@ -34,6 +35,9 @@ public static MainActivity Instance = null;
 
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getCanonicalName()));
+
+//        ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).registerBluetoothEventReceiver (new ComponentName(getPackageName(),
+//                MediaButtonIntentReceiver.class.getCanonicalName()));
 
         final Button button = (Button) findViewById(R.id.exit_button);
         button.setOnClickListener(new View.OnClickListener() {
